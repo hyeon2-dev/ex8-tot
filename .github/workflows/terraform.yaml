@@ -1,0 +1,144 @@
+name: Terraform Infrastructure Pipeline
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "infra/**"
+      - "scripts/install-controller.sh"
+      - ".github/workflows/terraform.yaml"
+
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      # =========================================================
+      # 1. GitHub 저장소 코드 가져오기
+      # =========================================================
+      - name: 소스코드 가져오기
+        uses: actions/checkout@v4
+
+
+      # =========================================================
+      # 2. AWS 인증
+      # =========================================================
+      - name: AWS 자격 증명 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+
+      # =========================================================
+      # 3. Terraform 설치
+      # =========================================================
+      - name: Terraform 설치
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_wrapper: false
+
+
+      # =========================================================
+      # 4. terraform.tfvars 생성
+      #
+      # GitHub Secret에 TF_VARS_DEV가 없다면 빈 파일이 생성됨
+      # =========================================================
+      - name: Terraform 변수 파일 생성
+        working-directory: infra/enviroments/dev
+        env:
+          TF_VARS_DEV: ${{ secrets.TF_VARS_DEV }}
+        run: |
+          printf '%s\n' "$TF_VARS_DEV" > terraform.tfvars
+
+
+      # =========================================================
+      # 5. Terraform Init
+      # =========================================================
+      - name: Terraform Init
+        working-directory: infra/enviroments/dev
+        run: |
+          terraform init -input=false
+
+
+      # =========================================================
+      # 6. Terraform Validate
+      # =========================================================
+      - name: Terraform Validate
+        working-directory: infra/enviroments/dev
+        run: |
+          terraform validate
+
+
+      # =========================================================
+      # 7. Terraform Plan
+      # =========================================================
+      - name: Terraform Plan
+        working-directory: infra/enviroments/dev
+        run: |
+          terraform plan \
+            -input=false \
+            -out=tfplan
+
+
+      # =========================================================
+      # 8. Terraform Apply
+      # =========================================================
+      - name: Terraform Apply
+        working-directory: infra/enviroments/dev
+        run: |
+          terraform apply \
+            -input=false \
+            -auto-approve \
+            tfplan
+
+
+      # =========================================================
+      # 9. kubectl 설치
+      # =========================================================
+      - name: kubectl 설치
+        uses: azure/setup-kubectl@v4
+
+
+      # =========================================================
+      # 10. Helm 설치
+      # =========================================================
+      - name: Helm 설치
+        uses: azure/setup-helm@v4
+
+
+      # =========================================================
+      # 11. eksctl 설치
+      # =========================================================
+      - name: eksctl 설치
+        run: |
+          ARCH=amd64
+          PLATFORM="$(uname -s)_${ARCH}"
+
+          curl -sLO \
+            "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_${PLATFORM}.tar.gz"
+
+          tar -xzf "eksctl_${PLATFORM}.tar.gz" -C /tmp
+
+          sudo mv /tmp/eksctl /usr/local/bin/eksctl
+
+          eksctl version
+
+
+      # =========================================================
+      # 12. Load Balancer Controller 설치 스크립트 실행
+      # =========================================================
+      - name: AWS Load Balancer Controller 설정
+        run: |
+          chmod +x scripts/install-controller.sh
+          ./scripts/install-controller.sh

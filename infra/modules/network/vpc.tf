@@ -2,7 +2,7 @@
 # VPC
 # ================================================================
 resource "aws_vpc" "this" {
-    cidr_block = "10.0.0.0/16"  # 이 네트워크가 사용할 IP 주소 범위
+    cidr_block = local.vpc_cidr  # 이 네트워크가 사용할 IP 주소 범위
     enable_dns_hostnames = true
     enable_dns_support = true
     instance_tenancy = "default"

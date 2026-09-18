@@ -51,7 +51,7 @@ resource "aws_security_group" "std19_ex8_k8s_sg" {
 # ===================================================================================
 # 클러스터(k8s)용 역할(role) 생성
 resource "aws_iam_role" "std19_ex8_cluster_role" {
-  name            = "${local.tag_header}ex8-eks-cluster-role"
+  name            = "${local.tag_header}eks-cluster-role"
   assume_role_policy  =jsonencode({
     Version   = "2012-10-17"
     Statement = [
@@ -74,7 +74,7 @@ resource "aws_iam_role_policy_attachment" "cluster_policy" {
 # ===================================================================================
 # 워커노드용 역할 및 정책
 resource "aws_iam_role" "std19_ex8_node_role" {
-  name            = "${local.tag_header}ex8-eks-node-role"
+  name            = "${local.tag_header}eks-node-role"
   assume_role_policy  =jsonencode({
     Version   = "2012-10-17"
     Statement = [
@@ -112,7 +112,7 @@ resource "aws_iam_role_policy_attachment" "node_policy" {
 # 3. EKS Cluster 리소스 생성
 # ===================================================================================
 resource "aws_eks_cluster" "std19_ex8_k8s" {
-  name          = "${local.tag_header}ex8-eks-cluster"
+  name          = "${local.tag_header}eks-cluster"
 
   # 클러스터 역할
   role_arn      = aws_iam_role.std19_ex8_cluster_role.arn
@@ -234,7 +234,7 @@ resource "null_resource" "update_kubeconfig" {
 resource "aws_eks_access_entry" "bipa17-student19" {
   cluster_name      = aws_eks_cluster.std19_ex8_k8s.name
   # 등록할 사용자의 계정 ARN
-  principal_arn     = "arn:aws:iam::925047940866:user/bipa17-student19"
+  principal_arn     = local.eks_admin_principal_arn
 
   # 아래와 같이 지정하고 사용자 계정을 IAM에서 역할 부여
   kubernetes_groups = ["master"]

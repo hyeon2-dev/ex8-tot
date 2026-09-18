@@ -15,6 +15,7 @@ locals {
             }   
         }
     ]...)
-    region      = data.aws_region.current.region
+    region                  = data.aws_region.current.region
+    eks_admin_principal_arn = var.eks_admin_principal_arn
     # ami_id      = data.aws_ami.ubuntu_24_04.id
 }

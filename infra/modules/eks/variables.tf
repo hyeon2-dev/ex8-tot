@@ -21,4 +21,3 @@ variable "security_group_ids" {
 variable "region" {
   type = string
 }
-

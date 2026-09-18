@@ -10,3 +10,8 @@ variable "vpc_cidr" {
     default         = "10.0.0.0/16"
 }
 
+variable "eks_admin_principal_arn" {
+  type = string
+}
+
+

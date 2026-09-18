@@ -150,7 +150,7 @@ resource "aws_route_table" "std19_ex8_private_rt" {
 
     route{
         cidr_block = "0.0.0.0/0"
-        gateway_id = aws_nat_gateway.std19_ex8_nat_gw.id
+        nat_gateway_id = aws_nat_gateway.std19_ex8_nat_gw.id
     }
 
     tags = {
@@ -171,7 +171,7 @@ resource "aws_route_table" "std19_ex8_cluster_rt" {
 
     route{
         cidr_block = "0.0.0.0/0"
-        gateway_id = aws_nat_gateway.std19_ex8_nat_gw.id
+        nat_gateway_id = aws_nat_gateway.std19_ex8_nat_gw.id
     }
 
     tags = {

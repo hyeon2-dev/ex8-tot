@@ -11,7 +11,6 @@ module "network" {
     tag_header      = local.tag_header
     subnet_map      = local.subnet_map
     region          = local.region
-    eks_admin_principal_arn   = local.eks_admin_principal_arn
 }
 
 module "eks" {
@@ -22,7 +21,7 @@ module "eks" {
     tag_header          = local.tag_header
     security_group_ids  = module.network.security_group_ids
     region              = local.region
-
+    eks_admin_principal_arn   = local.eks_admin_principal_arn
 }
 
 module "ecr" {

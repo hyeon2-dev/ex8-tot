@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: 925047940866.dkr.ecr.us-west-2.amazonaws.com/std19-ex8-fastapi:v1
+          image: 925047940866.dkr.ecr.us-west-2.amazonaws.com/std19-ex8-fastapi:f30c24fe7a62cd2739441ec6ebdf800ca0557039
           ports:
             - containerPort: 8000
           readinessProbe:

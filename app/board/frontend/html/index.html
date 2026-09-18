@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>BOARD — 작은 생각을 나누는 공간</title>
+
+  <style>
+    :root {
+      --bg: #f5f6f3;
+      --surface: #ffffff;
+      --ink: #182923;
+      --muted: #69766f;
+      --line: #dfe5df;
+      --accent: #c7f268;
+      --danger: #b42318;
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: .6;
+    }
+
+    :focus-visible {
+      outline: 3px solid #638f28;
+      outline-offset: 4px;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 48px));
+      margin: auto;
+    }
+
+    header {
+      min-height: 88px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 21px;
+      font-weight: 850;
+      letter-spacing: -1px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: var(--ink);
+      color: var(--accent);
+      font-size: 22px;
+    }
+
+    .header-note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      margin: 36px 0;
+      padding: 48px;
+      border-radius: 30px;
+      background: var(--ink);
+      color: white;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 270px;
+      height: 270px;
+      right: -60px;
+      top: -75px;
+      border: 52px solid var(--accent);
+      border-radius: 50%;
+      opacity: .9;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      position: relative;
+      z-index: 1;
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 3px;
+      font-weight: 700;
+    }
+
+    h1 {
+      position: relative;
+      z-index: 1;
+      margin: 20px 0 16px;
+      font-size: clamp(30px, 4.5vw, 49px);
+      line-height: 1.25;
+      letter-spacing: -2px;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 1;
+      max-width: 440px;
+      margin: 0;
+      color: #c4d0c8;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 32px;
+      align-items: start;
+    }
+
+    .composer {
+      padding: 26px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -.7px;
+    }
+
+    .subtext {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    label {
+      display: block;
+      margin: 23px 0 9px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fafbf9;
+      color: var(--ink);
+      transition: border-color .2s;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #8a958e;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #638f28;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 170px;
+      line-height: 1.7;
+    }
+
+    .counter {
+      display: block;
+      margin: 7px 0 20px;
+      text-align: right;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .submit {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 15px 18px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--accent);
+      color: var(--ink);
+      font-weight: 750;
+    }
+
+    .submit:hover:not(:disabled) {
+      background: #b6e650;
+    }
+
+    .notice {
+      margin: 15px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .feed-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin: 3px 0 20px;
+    }
+
+    .feed-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      padding: 4px 9px;
+      border-radius: 8px;
+      background: #e5eadf;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .refresh {
+      border: 1px solid var(--line);
+      background: transparent;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .search-label {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .search {
+      margin-bottom: 18px;
+      background: white;
+    }
+
+    .cards {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      padding: 25px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      overflow-wrap: anywhere;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .avatar {
+      display: grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      border-radius: 9px;
+      background: #edf3e4;
+      color: #496329;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .card h3 {
+      margin: 17px 0 9px;
+      font-size: 18px;
+      line-height: 1.5;
+      letter-spacing: -.5px;
+    }
+
+    .card p {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.85;
+      color: #536259;
+      font-size: 14px;
+    }
+
+    .empty {
+      padding: 60px 20px;
+      text-align: center;
+      border: 1px dashed #cdd6cc;
+      border-radius: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .status {
+      min-height: 22px;
+      margin: 12px 0;
+      color: #416527;
+      font-size: 13px;
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 56px;
+      padding: 24px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 800px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 34px 26px;
+      }
+
+      .hero::after {
+        opacity: .18;
+      }
+
+      .shell {
+        width: calc(100% - 32px);
+      }
+
+      .header-note {
+        font-size: 11px;
+      }
+
+      footer {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <header>
+      <a class="brand" href="/" aria-label="BOARD 홈">
+        <span class="brand-icon" aria-hidden="true">↗</span>
+        BOARD.
+      </a>
+      <span class="header-note">생각을 모으는 작은 공간</span>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <span class="eyebrow">A SPACE FOR YOUR IDEAS</span>
+        <h1 id="hero-title">작은 생각이 모여,<br>새로운 이야기가 되도록.</h1>
+        <p>오늘의 발견, 떠오른 아이디어, 함께 나누고 싶은 이야기.<br>
+          거창하지 않아도 좋아요. 편하게 남겨주세요.</p>
+      </section>
+
+      <div class="layout">
+        <section class="composer" aria-labelledby="compose-title">
+          <h2 id="compose-title">이야기 남기기</h2>
+          <p class="subtext">지금 떠오른 생각을 들려주세요.</p>
+
+          <form id="post-form">
+            <label for="title">제목</label>
+            <input id="title" name="title" maxlength="100" placeholder="어떤 이야기를 나누고 싶나요?" required>
+
+            <label for="content">내용</label>
+            <textarea id="content" name="content" maxlength="2000" placeholder="자유롭게 작성해주세요." aria-describedby="counter"
+              required></textarea>
+
+            <span id="counter" class="counter">0 / 2,000</span>
+
+            <button id="submit" class="submit" type="submit">
+              <span id="submit-label">게시하기</span>
+              <span aria-hidden="true">↗</span>
+            </button>
+          </form>
+
+          <p id="form-status" class="status" role="status"></p>
+          <p class="notice">
+            학습용 게시판입니다. 비밀번호 등 민감한 정보는 작성하지 마세요.
+            서버가 재시작되면 게시글이 초기화됩니다.
+          </p>
+        </section>
+
+        <section aria-labelledby="feed-title">
+          <div class="feed-top">
+            <div class="feed-heading">
+              <h2 id="feed-title">모두의 이야기</h2>
+              <span id="count" class="badge">0</span>
+            </div>
+            <button id="refresh" class="refresh" type="button">새로고침 ↻</button>
+          </div>
+
+          <label class="search-label" for="search">게시글 검색</label>
+          <input id="search" class="search" type="search" placeholder="제목이나 내용으로 찾아보세요">
+
+          <p id="feed-status" class="status" role="status"></p>
+          <div id="posts" class="cards" aria-busy="true"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <span>BOARD. — Share a little, inspire a lot.</span>
+      <span>Built with Nginx + FastAPI</span>
+    </footer>
+  </div>
+
+  <script>
+    const form = document.getElementById("post-form");
+    const titleInput = document.getElementById("title");
+    const contentInput = document.getElementById("content");
+    const searchInput = document.getElementById("search");
+    const postsElement = document.getElementById("posts");
+    const countElement = document.getElementById("count");
+    const counter = document.getElementById("counter");
+    const submitButton = document.getElementById("submit");
+    const submitLabel = document.getElementById("submit-label");
+    const refreshButton = document.getElementById("refresh");
+    const formStatus = document.getElementById("form-status");
+    const feedStatus = document.getElementById("feed-status");
+
+    let posts = [];
+    let loading = false;
+    let loaded = false;
+
+    function setStatus(element, text, error = false) {
+      element.textContent = text;
+      element.classList.toggle("error", error);
+    }
+
+    function renderPosts() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      const filtered = posts.filter((post) =>
+        `${post.title} ${post.content}`.toLowerCase().includes(keyword)
+      );
+
+      countElement.textContent = keyword
+        ? `${filtered.length} / ${posts.length}`
+        : posts.length;
+
+      postsElement.replaceChildren();
+
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = !loaded
+          ? "게시글 목록을 불러와 주세요."
+          : keyword
+            ? "검색 결과가 없어요. 다른 단어로 찾아보세요."
+            : "아직 이야기가 없어요. 첫 번째 글을 남겨보세요!";
+        postsElement.append(empty);
+        return;
+      }
+
+      for (const post of filtered) {
+        const article = document.createElement("article");
+        article.className = "card";
+
+        const meta = document.createElement("div");
+        meta.className = "card-meta";
+
+        const avatar = document.createElement("span");
+        avatar.className = "avatar";
+        avatar.textContent = "B";
+        avatar.setAttribute("aria-hidden", "true");
+
+        const author = document.createElement("span");
+        author.textContent = `익명의 작성자 · #${post.id}`;
+
+        const title = document.createElement("h3");
+        title.textContent = post.title;
+
+        const content = document.createElement("p");
+        content.textContent = post.content;
+
+        meta.append(avatar, author);
+        article.append(meta, title, content);
+        postsElement.append(article);
+      }
+    }
+
+    async function request(path, options = {}) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+
+      try {
+        const response = await fetch(path, {
+          ...options,
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error(`요청을 처리하지 못했어요. (HTTP ${response.status})`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        if (error.name === "AbortError") {
+          throw new Error(
+            "응답 시간이 초과됐어요. 등록 요청이었다면 목록을 새로고침해 확인해주세요."
+          );
+        }
+        throw error;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    async function loadPosts() {
+      if (loading) return false;
+
+      loading = true;
+      refreshButton.disabled = true;
+      postsElement.setAttribute("aria-busy", "true");
+      setStatus(feedStatus, "이야기를 불러오는 중이에요…");
+
+      try {
+        const result = await request("/api/posts");
+        if (!Array.isArray(result)) {
+          throw new Error("게시글 응답 형식을 확인해주세요.");
+        }
+
+        posts = result;
+        loaded = true;
+        renderPosts();
+        setStatus(feedStatus, "");
+        return true;
+      } catch (error) {
+        setStatus(feedStatus, error.message, true);
+        return false;
+      } finally {
+        loading = false;
+        refreshButton.disabled = false;
+        postsElement.setAttribute("aria-busy", "false");
+      }
+    }
+
+    contentInput.addEventListener("input", () => {
+      counter.textContent = `${contentInput.value.length.toLocaleString()} / 2,000`;
+    });
+
+    searchInput.addEventListener("input", renderPosts);
+    refreshButton.addEventListener("click", loadPosts);
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (submitButton.disabled) return;
+
+      const title = titleInput.value.trim();
+      const content = contentInput.value.trim();
+
+      if (!title || !content) {
+        setStatus(formStatus, "제목과 내용을 공백 없이 입력해주세요.", true);
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitLabel.textContent = "등록 중…";
+      setStatus(formStatus, "");
+
+      try {
+        const post = await request("/api/posts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, content })
+        });
+
+        // 등록 성공 후 입력값을 초기화하고 화면에 바로 반영
+        posts = [post, ...posts.filter((item) => item.id !== post.id)];
+        searchInput.value = "";
+        form.reset();
+        counter.textContent = "0 / 2,000";
+        renderPosts();
+
+        setStatus(formStatus, "이야기가 등록됐어요!");
+      } catch (error) {
+        setStatus(formStatus, error.message, true);
+      } finally {
+        submitButton.disabled = false;
+        submitLabel.textContent = "게시하기";
+      }
+    });
+
+    loadPosts();
+  </script>
+</body>
+
+</html>

@@ -21,3 +21,7 @@ variable "security_group_ids" {
 variable "region" {
   type = string
 }
+
+variable "eks_admin_principal_arn" {
+  type = string
+}

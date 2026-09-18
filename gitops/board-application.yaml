@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: board
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/hyeon2-dev/ex8-tot.git
+    targetRevision: main
+    path: k8s
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      
+    syncOptions:
+      - CreateNamespace=true

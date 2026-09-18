@@ -6,6 +6,7 @@ on:
     paths:
       - "app/board/**"
       - ".github/workflows/board-deploy.yaml"
+  workflow_dispatch:
 
 jobs:
   build-and-update:

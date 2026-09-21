@@ -5,7 +5,7 @@ resource "aws_ecr_repository" "std19_ex8_nginx" {
   image_tag_mutability = "IMMUTABLE"
 
   # 이미지가 들어 있으면 저장소 강제 삭제 방지
-  force_delete = false
+  force_delete = true
 
   image_scanning_configuration {
     scan_on_push = true
@@ -27,7 +27,7 @@ resource "aws_ecr_repository" "std19_ex8_fastapi" {
   image_tag_mutability = "IMMUTABLE"
 
   # 이미지가 들어 있으면 저장소 강제 삭제 방지
-  force_delete = false
+  force_delete = true
 
   image_scanning_configuration {
     scan_on_push = true

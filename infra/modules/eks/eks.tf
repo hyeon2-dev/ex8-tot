@@ -129,11 +129,17 @@ resource "aws_eks_cluster" "std19_ex8_k8s" {
     authentication_mode   = "API_AND_CONFIG_MAP"
 
     # 생성자에게 자동으로 관리자 권한을 부여
-    bootstrap_cluster_creator_admin_permissions = true
+    bootstrap_cluster_creator_admin_permissions = false
+  }
+
+  # 기존 클러스터는 이 설정 차이 때문에 교체하지 않음
+  lifecycle {
+    ignore_changes = [
+      access_config[0].bootstrap_cluster_creator_admin_permissions
+    ]
   }
 
   depends_on = [ aws_iam_role_policy_attachment.cluster_policy ]
-
 }
 
 # ===================================================================================
